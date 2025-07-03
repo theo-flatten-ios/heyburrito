@@ -26,14 +26,14 @@ init().then(() => {
     BurritoStore.setDatabase(database);
 
     // Set and start slack services
-    const { wbc } = slack;
-    WBCHandler.register(wbc);
+    // const { wbc } = slack;
+    // WBCHandler.register(wbc);
 
     // Start bot instance
     start();
 
     // Start localstore instance
-    LocalStore.start();
+    // LocalStore.start();
 
     /**
      * Httpserver request handler
