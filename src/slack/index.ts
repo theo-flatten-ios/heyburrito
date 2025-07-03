@@ -1,6 +1,6 @@
 import * as log from 'bog';
 import { WebClient } from '@slack/web-api';
-import { RTMMock, WebMock } from '../../test/lib/slackMock';
+import { WebMock } from '../../test/lib/slackMock';
 import config from '../config';
 
 const { slackMock } = config.misc;
