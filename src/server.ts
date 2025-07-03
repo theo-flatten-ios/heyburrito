@@ -19,7 +19,8 @@ const init = async () => {
     await boot();
 };
 
-init().then(() => {
+async function main() {
+    await init();
     log.info('Staring heyburrito');
 
     // Configure BurritoStore
@@ -67,4 +68,6 @@ init().then(() => {
         WSSHandler();
         log.info(`HttpServer started on ${config.http.http_port}`);
     });
-});
+}
+
+main();
