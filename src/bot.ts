@@ -4,7 +4,7 @@ import BurritoStore from './store/BurritoStore';
 import LocalStore from './store/LocalStore';
 import { parseMessage } from './lib/parseMessage';
 import { validBotMention, validMessage } from './lib/validator';
-import * as wbc from './slack/Wbc';
+import WBCHandler from './slack/Wbc';
 
 const {
     enableDecrement,
@@ -54,7 +54,7 @@ const giveBurritos = async (giver: string, updates: Updates[]) => {
     }, Promise.resolve());
 };
 
-const notifyUser = (user: string, message: string) => wbc.sendDM(user, message);
+const notifyUser = (user: string, message: string) => WBCHandler.sendDM(user, message);
 
 const handleBurritos = async (giver: string, updates: Updates[]) => {
     if (enableDecrement) {
