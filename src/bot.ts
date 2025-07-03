@@ -15,6 +15,8 @@ const {
     disableEmojiDec,
 } = config.slack;
 
+console.log('Bolt App Token (xoxb-): ', config.slack.token);
+console.log('Bolt App Token (xapp-): ', config.slack.appToken);
 const app = new App({
     token: config.slack.token,
     signingSecret: config.slack.signingSecret,
