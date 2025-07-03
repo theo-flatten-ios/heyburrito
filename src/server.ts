@@ -8,6 +8,8 @@ import LocalStore from './store/LocalStore';
 import database from './database';
 import config from './config';
 import { start } from './bot';
+import slack from './slack';
+import WBCHandler from './slack/Wbc';
 import APIHandler from './api';
 import WEBHandler from './web';
 import WSSHandler from './wss';
@@ -22,6 +24,10 @@ init().then(() => {
 
     // Configure BurritoStore
     BurritoStore.setDatabase(database);
+
+    // Set and start slack services
+    const { wbc } = slack;
+    WBCHandler.register(wbc);
 
     // Start bot instance
     start();
