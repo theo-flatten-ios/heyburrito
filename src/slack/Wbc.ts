@@ -46,6 +46,18 @@ class Wbc {
             log.info(`Notified user ${username}`);
         }
     }
+
+    async sendEphemeralMessage(channel: string, user: string, text: string) {
+        const res = await this.wbc.chat.postEphemeral({
+            channel,
+            user,
+            text,
+            as_user: true,
+        });
+        if (res.ok) {
+            log.info(`Sent ephemeral message to user ${user} in channel ${channel}`);
+        }
+    }
 }
 
 export default new Wbc();

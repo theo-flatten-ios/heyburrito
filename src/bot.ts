@@ -56,20 +56,26 @@ const giveBurritos = async (giver: string, updates: Updates[]) => {
     }, Promise.resolve());
 };
 
-const notifyUser = (user: string, message: string) => WBCHandler.sendDM(user, message);
+const notifyUser = (channel: string, user: string, message: string) => WBCHandler.sendEphemeralMessage(channel, user, message);
 
-const handleBurritos = async (giver: string, updates: Updates[]) => {
+const handleBurritos = async (giver: string, updates: Updates[], channel: string) => {
     if (enableDecrement) {
         const burritos = await BurritoStore.givenBurritosToday(giver, 'from');
         const diff = dailyCap - burritos;
         if (updates.length > diff) {
-            notifyUser(giver, `You are trying to give away ${updates.length} burritos, but you only have ${diff} burritos left today!`);
+            notifyUser(channel, giver, `${updates.length}개의 신발을 전달했어요. 오늘은 ${diff}개의 신발이 남아있어요.`);
             return false;
         }
         if (burritos >= dailyCap) {
             return false;
         }
         await giveBurritos(giver, updates);
+        // Success message for increment burritos
+        const incUpdates = updates.filter((x) => x.type === 'inc');
+        if (incUpdates.length > 0) {
+            const userNames = incUpdates.map(u => `<@${u.username}>`).join(', ');
+            notifyUser(channel, giver, `${userNames}님에게 shoes가 전달되었어요.`);
+        }
     } else {
         const givenBurritos = await BurritoStore.givenToday(giver, 'from', 'inc');
         const givenRottenBurritos = await BurritoStore.givenToday(giver, 'from', 'dec');
@@ -79,16 +85,20 @@ const handleBurritos = async (giver: string, updates: Updates[]) => {
         const diffDec = dailyDecCap - givenRottenBurritos;
         if (incUpdates.length) {
             if (incUpdates.length > diffInc) {
-                notifyUser(giver, `You are trying to give away ${updates.length} burritos, but you only have ${diffInc} burritos left today!`);
+                notifyUser(channel, giver, `${updates.length}개의 신발을 전달했어요. 오늘은 ${diffInc}개의 신발이 남아있어요.`);
             } else {
                 await giveBurritos(giver, incUpdates);
+                const userNames = incUpdates.map(u => `<@${u.username}>`).join(', ');
+                notifyUser(channel, giver, `${userNames}님에게 shoes가 전달되었어요.`);
             }
         }
         if (decUpdates.length) {
             if (decUpdates.length > diffDec) {
-                notifyUser(giver, `You are trying to give away ${updates.length} rottenburritos, but you only have ${diffDec} rottenburritos left today!`);
+                notifyUser(channel, giver, `You are trying to give away ${updates.length} rottenburritos, but you only have ${diffDec} rottenburritos left today!`);
             } else {
                 await giveBurritos(giver, decUpdates);
+                const userNames = decUpdates.map(u => `<@${u.username}>`).join(', ');
+                notifyUser(channel, giver, `${userNames}님에게 ${decUpdates.length}개의 낡은 shoes가 전달되었습니다.`);
             }
         }
     }
@@ -108,7 +118,7 @@ const start = async () => {
                 if (result) {
                     const { giver, updates } = result;
                     if (updates.length) {
-                        await handleBurritos(giver, updates);
+                        await handleBurritos(giver, updates, message.channel);
                     }
                 }
             }
