@@ -30,7 +30,7 @@ init().then(() => {
     WBCHandler.register(wbc);
 
     // Start bot instance
-    start();
+    await start();
 
     // Start localstore instance
     LocalStore.start();
