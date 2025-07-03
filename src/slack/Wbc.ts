@@ -20,6 +20,7 @@ class Wbc {
         const bots: WbcParsed[] = [];
 
         log.info('Fetching slack users via wbc');
+        log.debug('WBC WebClient token: ', this.wbc.token);
         const result = await this.wbc.users.list();
         result.members.forEach((x: any) => {
             // reassign correct array to arr
