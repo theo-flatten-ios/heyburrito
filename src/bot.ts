@@ -1,10 +1,10 @@
+import { App, LogLevel } from '@slack/bolt';
 import config from './config';
 import BurritoStore from './store/BurritoStore';
 import LocalStore from './store/LocalStore';
 import { parseMessage } from './lib/parseMessage';
 import { validBotMention, validMessage } from './lib/validator';
-import Rtm from './slack/Rtm';
-import Wbc from './slack/Wbc';
+import * as wbc from './slack/Wbc';
 
 const {
     enableDecrement,
@@ -14,6 +14,14 @@ const {
     emojiDec,
     disableEmojiDec,
 } = config.slack;
+
+const app = new App({
+    token: config.slack.token,
+    signingSecret: config.slack.signingSecret,
+    socketMode: true,
+    appToken: config.slack.appToken,
+    logLevel: LogLevel.DEBUG,
+});
 
 interface Emojis {
     type: string;
@@ -46,7 +54,7 @@ const giveBurritos = async (giver: string, updates: Updates[]) => {
     }, Promise.resolve());
 };
 
-const notifyUser = (user: string, message: string) => Wbc.sendDM(user, message);
+const notifyUser = (user: string, message: string) => wbc.sendDM(user, message);
 
 const handleBurritos = async (giver: string, updates: Updates[]) => {
     if (enableDecrement) {
@@ -85,13 +93,16 @@ const handleBurritos = async (giver: string, updates: Updates[]) => {
     return true;
 };
 
-const start = () => {
-    Rtm.on('slackMessage', async (event: any) => {
-        if (validMessage(event, emojis, LocalStore.getAllBots())) {
-            if (validBotMention(event, LocalStore.botUserID())) {
+const start = async () => {
+    await app.start();
+    console.log('⚡️ Bolt app is running!');
+
+    app.message(async ({ message, say }) => {
+        if (validMessage(message, emojis, LocalStore.getAllBots())) {
+            if (validBotMention(message, LocalStore.botUserID())) {
                 // Geather data and send back to user
             } else {
-                const result = parseMessage(event, emojis);
+                const result = parseMessage(message, emojis);
                 if (result) {
                     const { giver, updates } = result;
                     if (updates.length) {
