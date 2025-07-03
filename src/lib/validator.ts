@@ -32,6 +32,11 @@ function burritoToBot(message: any, emojis: any) {
 }
 
 function validMessage(message: any, emojis: any, allBots: any): boolean {
+    // Ensure allBots is an array before proceeding
+    if (!Array.isArray(allBots)) {
+        log.warn('allBots is not an array, skipping message validation.');
+        return false;
+    }
     // We dont want messages with subtypes
     if (message.subtype) return false;
 
