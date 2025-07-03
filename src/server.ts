@@ -33,7 +33,7 @@ init().then(() => {
     start();
 
     // Start localstore instance
-    // LocalStore.start();
+    LocalStore.start();
 
     /**
      * Httpserver request handler
