@@ -3,10 +3,7 @@ import WebSocket from 'ws';
 
 const appToken = 'YOUR_SLACK_APP_TOKEN_HERE'; // 여기에 실제 SLACK_APP_TOKEN (xapp-) 값을 붙여넣으세요.
 
-if (!appToken || appToken === 'YOUR_SLACK_APP_TOKEN_HERE') {
-  console.error('SLACK_APP_TOKEN을 입력해주세요.');
-  process.exit(1);
-}
+
 
 const web = new WebClient(appToken);
 
