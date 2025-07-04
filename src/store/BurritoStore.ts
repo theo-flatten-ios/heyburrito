@@ -40,6 +40,7 @@ class BurritoStore extends EventEmitter {
 
     async giveBurrito(to: string, from: string, date = new Date()): Promise<string> {
         log.info(`Burrito given to ${to} from ${from}`);
+        log.debug(`giveBurrito: to=${to}, from=${from}, date=${date}`);
         await this.database.give(to, from, date);
         this.emit('GIVE', to, from);
         return to;
@@ -47,6 +48,7 @@ class BurritoStore extends EventEmitter {
 
     async takeAwayBurrito(to: string, from: string, date = new Date()): Promise<string | []> {
         log.info(`Burrito taken away from ${to} by ${from}`);
+        log.debug(`takeAwayBurrito: to=${to}, from=${from}, date=${date}`);
         const score: number = await this.database.getScore(to, 'to', true);
         if (!score) return [];
         await this.database.takeAway(to, from, date);
@@ -55,6 +57,7 @@ class BurritoStore extends EventEmitter {
     }
 
     async getUserStats(user: string): Promise<GetUserStats> {
+        log.debug(`getUserStats: user=${user}`);
         const [
             received,
             given,
@@ -76,6 +79,7 @@ class BurritoStore extends EventEmitter {
     }
 
     async getScoreBoard({ ...args }): Promise<DatabasePost[]> {
+        log.debug(`getScoreBoard: args=`, args);
         return this.database.getScoreBoard({ ...args });
     }
 
@@ -84,8 +88,9 @@ class BurritoStore extends EventEmitter {
      * @param {string} listType - to / from defaults from
      */
     async givenBurritosToday(user: string, listType: string): Promise<number> {
+        log.debug(`givenBurritosToday called: user=${user}, listType=${listType}`);
         const givenToday: Find[] = await this.database.findFromToday(user, listType);
-        log.debug(`givenBurritosToday for ${user} (${listType}):`, givenToday);
+        log.debug(`givenBurritosToday result for ${user} (${listType}):`, givenToday);
         return givenToday.length;
     }
 
@@ -94,14 +99,15 @@ class BurritoStore extends EventEmitter {
      * @param {string} listType - to / from defaults from
      */
     async givenToday(user: string, listType: string, type: any = false): Promise<number> {
+        log.debug(`givenToday called: user=${user}, listType=${listType}, type=${type}`);
         const givenToday: Find[] = await this.database.findFromToday(user, listType);
-        log.debug(`givenToday for ${user} (${listType}):`, givenToday);
+        log.debug(`givenToday result for ${user} (${listType}):`, givenToday);
         if (type) {
             if (['inc', 'dec'].includes(type)) {
                 const valueFilter = (type === 'inc') ? 1 : -1;
-                log.debug(`Filtering by value: ${valueFilter}`);
+                log.debug(`givenToday filtering by value: ${valueFilter}`);
                 const givenFilter = givenToday.filter((x) => x.value === valueFilter);
-                log.debug(`givenFilter for ${user} (${listType}, ${type}):`, givenFilter);
+                log.debug(`givenToday filtered result for ${user} (${listType}, ${type}):`, givenFilter);
                 return givenFilter.length;
             }
         }
@@ -112,6 +118,7 @@ class BurritoStore extends EventEmitter {
      * @param {string} user - userId
      */
     async getUserScore(user: string, listType: string, num): Promise<number> {
+        log.debug(`getUserScore: user=${user}, listType=${listType}, num=${num}`);
         return this.database.getScore(user, listType, num);
     }
 }
