@@ -71,7 +71,7 @@ const handleBurritos = async (giver: string, updates: Updates[], channel: string
         log.debug(`handleBurritos (enableDecrement=true): diff=${diff}`);
 
         if (updates.length > diff) {
-            notifyUser(channel, giver, `${updates.length}개의 신발을 전달했어요. 오늘은 ${diff}개의 신발이 남아있어요.`);
+            notifyUser(channel, giver, `오늘 더 이상 신발을 전달할 수 없어요. 아쉽지만 내일 다시 이용해주세요.`);
             return false;
         }
         if (burritos >= dailyCap) {
@@ -98,7 +98,7 @@ const handleBurritos = async (giver: string, updates: Updates[], channel: string
 
         if (incUpdates.length) {
             if (incUpdates.length > diffInc) {
-                notifyUser(channel, giver, `${updates.length}개의 신발을 전달했어요. 오늘은 ${diffInc}개의 신발이 남아있어요.`);
+                notifyUser(channel, giver, `오늘 더 이상 신발을 전달할 수 없어요. 아쉽지만 내일 다시 이용해주세요.`);
             } else {
                 await giveBurritos(giver, incUpdates);
                 const userNames = incUpdates.map(u => `<@${u.username}>`).join(', ');
