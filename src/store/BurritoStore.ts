@@ -85,6 +85,7 @@ class BurritoStore extends EventEmitter {
      */
     async givenBurritosToday(user: string, listType: string): Promise<number> {
         const givenToday: Find[] = await this.database.findFromToday(user, listType);
+        log.debug(`givenBurritosToday for ${user} (${listType}):`, givenToday);
         return givenToday.length;
     }
 
