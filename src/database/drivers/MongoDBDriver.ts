@@ -98,13 +98,15 @@ class MongoDBDriver {
      * @returns {Find[]}
      */
     findFromToday(user: string, listType: string): Promise<Find[]> {
-        return this.find('burritos', {
+        const query = {
             [listType]: user,
             given_at: {
                 $gte: time().start,
                 $lt: time().end,
             },
-        });
+        };
+        log.debug(`findFromToday query for ${user} (${listType}):`, query);
+        return this.find('burritos', query);
     }
 
     /**
