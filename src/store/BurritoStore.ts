@@ -94,10 +94,13 @@ class BurritoStore extends EventEmitter {
      */
     async givenToday(user: string, listType: string, type: any = false): Promise<number> {
         const givenToday: Find[] = await this.database.findFromToday(user, listType);
+        log.debug(`givenToday for ${user} (${listType}):`, givenToday);
         if (type) {
             if (['inc', 'dec'].includes(type)) {
                 const valueFilter = (type === 'inc') ? 1 : -1;
+                log.debug(`Filtering by value: ${valueFilter}`);
                 const givenFilter = givenToday.filter((x) => x.value === valueFilter);
+                log.debug(`givenFilter for ${user} (${listType}, ${type}):`, givenFilter);
                 return givenFilter.length;
             }
         }
