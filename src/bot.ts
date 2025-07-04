@@ -5,6 +5,7 @@ import LocalStore from './store/LocalStore';
 import { parseMessage } from './lib/parseMessage';
 import { validBotMention, validMessage } from './lib/validator';
 import WBCHandler from './slack/Wbc';
+import * as log from 'bog';
 
 const {
     enableDecrement,
@@ -45,6 +46,7 @@ if (!disableEmojiDec) {
 }
 
 const giveBurritos = async (giver: string, updates: Updates[]) => {
+    log.debug(`giveBurritos called: giver=${giver}, updates=`, updates);
     return updates.reduce(async (prev: any, burrito) => {
         return prev.then(async () => {
             if (burrito.type === 'inc') {
@@ -59,9 +61,15 @@ const giveBurritos = async (giver: string, updates: Updates[]) => {
 const notifyUser = (channel: string, user: string, message: string) => WBCHandler.sendEphemeralMessage(channel, user, message);
 
 const handleBurritos = async (giver: string, updates: Updates[], channel: string) => {
+    log.debug(`handleBurritos called: giver=${giver}, updates=`, updates, `channel=${channel}`);
+    log.debug(`handleBurritos config: enableDecrement=${enableDecrement}, dailyCap=${dailyCap}, dailyDecCap=${dailyDecCap}`);
+
     if (enableDecrement) {
         const burritos = await BurritoStore.givenBurritosToday(giver, 'from');
+        log.debug(`handleBurritos (enableDecrement=true): burritos given today=${burritos}`);
         const diff = dailyCap - burritos;
+        log.debug(`handleBurritos (enableDecrement=true): diff=${diff}`);
+
         if (updates.length > diff) {
             notifyUser(channel, giver, `${updates.length}개의 신발을 전달했어요. 오늘은 ${diff}개의 신발이 남아있어요.`);
             return false;
@@ -77,12 +85,17 @@ const handleBurritos = async (giver: string, updates: Updates[], channel: string
             notifyUser(channel, giver, `${userNames}님에게 shoes가 전달되었어요.`);
         }
     } else {
+        log.debug(`handleBurritos (enableDecrement=false) path`);
         const givenBurritos = await BurritoStore.givenToday(giver, 'from', 'inc');
         const givenRottenBurritos = await BurritoStore.givenToday(giver, 'from', 'dec');
+        log.debug(`handleBurritos (enableDecrement=false): givenBurritos=${givenBurritos}, givenRottenBurritos=${givenRottenBurritos}`);
+
         const incUpdates = updates.filter((x) => x.type === 'inc');
         const decUpdates = updates.filter((x) => x.type === 'dec');
         const diffInc = dailyCap - givenBurritos;
         const diffDec = dailyDecCap - givenRottenBurritos;
+        log.debug(`handleBurritos (enableDecrement=false): diffInc=${diffInc}, diffDec=${diffDec}`);
+
         if (incUpdates.length) {
             if (incUpdates.length > diffInc) {
                 notifyUser(channel, giver, `${updates.length}개의 신발을 전달했어요. 오늘은 ${diffInc}개의 신발이 남아있어요.`);
