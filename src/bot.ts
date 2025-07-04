@@ -65,8 +65,8 @@ const handleBurritos = async (giver: string, updates: Updates[], channel: string
     log.debug(`handleBurritos config: enableDecrement=${enableDecrement}, dailyCap=${dailyCap}, dailyDecCap=${dailyDecCap}`);
 
     if (enableDecrement) {
-        const burritos = await BurritoStore.givenBurritosToday(giver, 'from');
-        log.debug(`handleBurritos (enableDecrement=true): burritos given today=${burritos}`);
+        const burritos = await BurritoStore.givenToday(giver, 'from', 'inc');
+        log.debug(`handleBurritos (enableDecrement=true): burritos given today (inc only)=${burritos}`);
         const diff = dailyCap - burritos;
         log.debug(`handleBurritos (enableDecrement=true): diff=${diff}`);
 
